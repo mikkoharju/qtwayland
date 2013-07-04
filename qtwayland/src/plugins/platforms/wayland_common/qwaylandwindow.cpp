@@ -191,8 +191,8 @@ void QWaylandWindow::setVisible(bool visible)
     } else {
         QWindowSystemInterface::handleExposeEvent(window(), QRect(QPoint(), geometry().size()));
         attach(static_cast<QWaylandBuffer *>(0), 0, 0);
+        commit();
     }
-    damage(QRect(QPoint(0,0),geometry().size()));
 }
 
 
