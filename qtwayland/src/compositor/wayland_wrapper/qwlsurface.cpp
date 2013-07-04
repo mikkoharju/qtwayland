@@ -441,14 +441,6 @@ void Surface::attach(struct wl_buffer *buffer)
 
     SurfaceBuffer *surfBuf = createSurfaceBuffer(buffer);
     m_bufferQueue << surfBuf;
-
-    if (!buffer) {
-        InputDevice *inputDevice = m_compositor->defaultInputDevice();
-        if (inputDevice->keyboardFocus() == this)
-            inputDevice->setKeyboardFocus(0);
-        if (inputDevice->mouseFocus() == this)
-            inputDevice->setMouseFocus(0, QPointF(), QPointF());
-    }
 }
 
 void Surface::damage(const QRect &rect)
@@ -516,6 +508,15 @@ void Surface::surface_commit(Resource *)
     }
 
     SurfaceBuffer *surfaceBuffer = m_bufferQueue.last();
+
+    if (!surfaceBuffer->waylandBufferHandle()) {
+        InputDevice *inputDevice = m_compositor->defaultInputDevice();
+        if (inputDevice->keyboardFocus() == this)
+            inputDevice->setKeyboardFocus(0);
+        if (inputDevice->mouseFocus() == this)
+            inputDevice->setMouseFocus(0, QPointF(), QPointF());
+    }
+
     if (surfaceBuffer->isComitted()) {
         if (QT_WAYLAND_PRINT_BUFFERING_WARNINGS)
             qWarning("Committing buffer that has already been committed");
