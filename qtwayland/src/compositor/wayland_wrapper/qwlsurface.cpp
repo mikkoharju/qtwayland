@@ -55,7 +55,7 @@
 
 #include <QtCore/QDebug>
 #include <QTouchEvent>
-
+#include <QQuickWindow>
 #include <wayland-server.h>
 
 #ifdef QT_COMPOSITOR_WAYLAND_GL
@@ -374,8 +374,6 @@ void Surface::doUpdate() {
         SurfaceBuffer *surfaceBuffer = currentSurfaceBuffer();
         if (surfaceBuffer && surfaceBuffer->damageRect().isValid()) {
             emit m_waylandSurface->damaged(surfaceBuffer->damageRect());
-        } else {
-            sendFrameCallback();
         }
     }
 }
@@ -530,6 +528,15 @@ void Surface::surface_commit(Resource *)
     }
 
     doUpdate();
+
+    // commit needs to cause an update according to the wayland protocol.
+    // marking qwaylandsurfaceitem dirty does not guarantee a frame swap,
+    // as the scenegraph sync might optimize away the dirtied item if it
+    // is not visible. In some cases commit can come without damage and
+    // we still need to cause the display update => do it here :/
+    if (m_waylandSurface->surfaceItem() && m_waylandSurface->surfaceItem()->window()) {
+        m_waylandSurface->surfaceItem()->window()->update();
+    }
 }
 
 void Surface::setClassName(const QString &className)
