@@ -108,7 +108,7 @@ QWaylandWindow::QWaylandWindow(QWindow *window)
             mShellSurface->updateTransientParent(window->transientParent());
         }
     } else if (mShellSurface) {
-        mShellSurface->setTopLevel();
+        setWindowState_helper(window->windowState());
     }
 
     setWindowFlags(window->flags());
@@ -397,17 +397,11 @@ void QWaylandWindow::handleContentOrientationChange(Qt::ScreenOrientation orient
         mExtendedWindow->setContentOrientation(orientation);
 }
 
-void QWaylandWindow::setWindowState(Qt::WindowState state)
+void QWaylandWindow::setWindowState_helper(Qt::WindowState state)
 {
-    if (mState == state) {
-        return;
-    }
-
-    // As of february 2013 QWindow::setWindowState sets the new state value after
-    // QPlatformWindow::setWindowState returns, so we cannot rely on QWindow::windowState
-    // here. We use then this mState variable.
     mState = state;
     createDecoration();
+
     switch (state) {
         case Qt::WindowFullScreen:
             mShellSurface->setFullscreen();
@@ -421,6 +415,18 @@ void QWaylandWindow::setWindowState(Qt::WindowState state)
         default:
             mShellSurface->setNormal();
     }
+}
+
+void QWaylandWindow::setWindowState(Qt::WindowState state)
+{
+    // As of february 2013 QWindow::setWindowState sets the new state value after
+    // QPlatformWindow::setWindowState returns, so we cannot rely on QWindow::windowState
+    // here. We use then this mState variable.
+    if (mState == state) {
+        return;
+    }
+
+    setWindowState_helper(state);
 
     QWindowSystemInterface::handleWindowStateChanged(window(), mState);
     QWindowSystemInterface::flushWindowSystemEvents(); // Required for oldState to work on WindowStateChanged

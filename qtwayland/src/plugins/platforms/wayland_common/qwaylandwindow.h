@@ -198,6 +198,7 @@ protected:
     Qt::WindowState mState;
 
 private:
+    void setWindowState_helper(Qt::WindowState state);
     void handleMouseEventWithDecoration(QWaylandInputDevice *inputDevice,
                                         ulong timestamp,
                                         const QPointF & local,
