@@ -79,7 +79,6 @@ private:
     QWaylandWindow *m_window;
     bool m_maximized;
     bool m_fullscreen;
-    QSize m_size;
 
     void shell_surface_ping(uint32_t serial) Q_DECL_OVERRIDE;
     void shell_surface_configure(uint32_t edges,

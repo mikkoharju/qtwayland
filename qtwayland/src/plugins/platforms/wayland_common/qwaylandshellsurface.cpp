@@ -80,14 +80,12 @@ void QWaylandShellSurface::move(QWaylandInputDevice *inputDevice)
 void QWaylandShellSurface::setMaximized()
 {
     m_maximized = true;
-    m_size = m_window->window()->geometry().size();
     set_maximized(0);
 }
 
 void QWaylandShellSurface::setFullscreen()
 {
     m_fullscreen = true;
-    m_size = m_window->window()->geometry().size();
     set_fullscreen(0, 0, 0);
 }
 
@@ -96,8 +94,9 @@ void QWaylandShellSurface::setNormal()
     m_fullscreen = m_maximized = false;
     // A toplevel surface is not fullscreen, maximized or transient.
     setTopLevel();
+    QSize size = m_window->window()->geometry().size();
     QMargins m = m_window->frameMargins();
-    m_window->configure(0, m_size.width() + m.left() + m.right(), m_size.height() + m.top() + m.bottom());
+    m_window->configure(0, size.width() + m.left() + m.right(), size.height() + m.top() + m.bottom());
 }
 
 void QWaylandShellSurface::setMinimized()
