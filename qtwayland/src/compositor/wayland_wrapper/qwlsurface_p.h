@@ -199,6 +199,7 @@ private:
                                   struct wl_resource *region) Q_DECL_OVERRIDE;
     void surface_commit(Resource *resource) Q_DECL_OVERRIDE;
 
+    friend QDebug operator<<(QDebug dbg, const Surface *c);
 };
 
 inline SurfaceBuffer *Surface::currentSurfaceBuffer() const {

@@ -120,6 +120,15 @@ void Compositor::bind_func(struct wl_client *client, void *data,
     wl_client_add_object(client,&wl_compositor_interface, &compositor_interface, id,data);
 }
 
+void Compositor::dump(int) {
+    Compositor *c = Compositor::instance();
+    qDebug() << "-- Compositor surfaces:";
+    Q_FOREACH (Surface *s, c->surfaces()) {
+        qDebug() << (c->m_dirty_surfaces.contains(s) ? " *" : "  ") << s;
+    }
+}
+
+
 Compositor *Compositor::instance()
 {
     return compositor;
@@ -146,6 +155,17 @@ Compositor::Compositor(QWaylandCompositor *qt_compositor)
     , m_retainNotify(0)
 {
     compositor = this;
+
+//#ifdef DEBUG
+    struct sigaction newAction, oldAction;
+    newAction.sa_handler = Compositor::dump;
+    sigemptyset(&newAction.sa_mask);
+    newAction.sa_flags = 0;
+
+    sigaction(SIGUSR1, 0, &oldAction);
+    if (oldAction.sa_handler != SIG_IGN)
+        sigaction(SIGUSR1, &newAction, 0);
+//#endif
 
 #if defined (QT_COMPOSITOR_WAYLAND_GL)
     QWindow *window = qt_compositor->window();

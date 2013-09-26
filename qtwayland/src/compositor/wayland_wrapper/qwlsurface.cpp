@@ -552,6 +552,21 @@ void Surface::setTitle(const QString &title)
     }
 }
 
+QDebug operator<<(QDebug dbg, const Surface *c)
+{
+    if (c) {
+        dbg.nospace() << "("
+                      << c->m_className << ", "
+                      << c->m_title << ", size: "
+                      << c->m_size << ", ncb: "
+                      << wl_list_length(&c->m_frame_callback_list) << ", npcb: "
+                      << wl_list_length(&c->m_pending_frame_callback_list) << ")";
+    } else {
+        dbg.nospace() << "(null surface)";
+    }
+    return dbg.space();
+}
+
 } // namespace Wayland
 
 QT_END_NAMESPACE

@@ -154,6 +154,8 @@ private slots:
     void processWaylandEvents();
 
 private:
+    static void dump(int signum);
+
     Display *m_display;
 
     /* Input */
