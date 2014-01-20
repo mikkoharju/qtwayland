@@ -238,6 +238,8 @@ void ShellSurface::shell_surface_set_transient(Resource *resource,
 
     if (m_surface->extendedSurface())
         m_surface->extendedSurface()->setVisibility(QWindow::AutomaticVisibility, false);
+
+    surface()->setPos(QPointF(x,y));
 }
 
 void ShellSurface::shell_surface_set_fullscreen(Resource *resource,
